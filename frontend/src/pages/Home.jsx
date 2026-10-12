@@ -40,6 +40,21 @@ export default function Home() {
         <p className="hero-hint">{t('home.drag')}</p>
       </section>
 
+      <section className="welcome">
+        <h2 className="welcome-title">{t('home.meet')}</h2>
+        <div className="welcome-layout">
+          <div className="welcome-photos">
+            <img className="welcome-pizza" src="/welcome-pizza.jpg" alt={t('home.pizzaAlt')} />
+            <img className="welcome-platter" src="/welcome-platter.jpg" alt={t('home.platterAlt')} />
+          </div>
+          <div className="welcome-copy">
+            <p className="welcome-kicker">{t('home.trueFlavor')}</p>
+            <h3>{t('home.experience')}</h3>
+            <p>{t('home.welcomeBody')}</p>
+          </div>
+        </div>
+      </section>
+
       <section className="band">
         <p>{band}</p>
       </section>
