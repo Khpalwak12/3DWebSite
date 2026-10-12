@@ -1,7 +1,16 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import DishSlides from '../components/DishSlides'
 import { useApi, useRestaurant } from '../context'
 import { useI18n } from '../i18n'
+
+const SLIDES = {
+  qabili: ['/slides/qabili-1.jpg', '/slides/qabili-2.jpg'],
+  'chicken-tikka': ['/slides/tikka-1.jpg', '/slides/tikka-2.jpg'],
+  bolani: ['/slides/bolani-1.jpg', '/slides/bolani-2.jpg'],
+  mantu: ['/slides/mantu-1.jpg', '/slides/mantu-2.jpg'],
+  firni: ['/slides/firni-1.jpg', '/slides/firni-2.jpg'],
+}
 
 const DiningScene = lazy(() => import('../three/DiningScene'))
 
@@ -66,15 +75,18 @@ export default function Home() {
         </div>
         {featured.loading && <p className="status">{t('home.menuLoading')}</p>}
         {featured.error && <p className="status error">{t('home.menuError')}</p>}
-        <div className="feature-grid">
-          {(featured.data?.items || []).map((dish) => {
+        <div className="dish-rows">
+          {(featured.data?.items || []).map((dish, index) => {
             const card = item(dish)
             return (
-              <article key={card.id} className="feature-card">
-                <p className="eyebrow dark">{card.category}</p>
-                <h3>{card.name}</h3>
-                <p>{card.description}</p>
-                <strong>{money(card.price)}</strong>
+              <article key={card.id} className={`dish-row ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                <DishSlides images={SLIDES[card.slug] || []} alt={card.name} />
+                <div className="dish-copy">
+                  <p className="eyebrow dark">{card.category}</p>
+                  <h3>{card.name}</h3>
+                  <p>{card.description}</p>
+                  <strong>{money(card.price)}</strong>
+                </div>
               </article>
             )
           })}
