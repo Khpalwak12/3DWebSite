@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import { RestaurantProvider } from './context'
+import { LanguageProvider } from './i18n'
 import About from './pages/About'
 import Home from './pages/Home'
 import MenuPage from './pages/MenuPage'
@@ -9,6 +10,7 @@ import Reserve from './pages/Reserve'
 export default function App() {
   return (
     <BrowserRouter>
+      <LanguageProvider>
       <RestaurantProvider>
         <Routes>
           <Route element={<Layout />}>
@@ -19,6 +21,7 @@ export default function App() {
           </Route>
         </Routes>
       </RestaurantProvider>
+      </LanguageProvider>
     </BrowserRouter>
   )
 }

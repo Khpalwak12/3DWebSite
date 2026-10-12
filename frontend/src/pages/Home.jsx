@@ -1,13 +1,14 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { money } from '../api'
 import { useApi, useRestaurant } from '../context'
+import { useI18n } from '../i18n'
 
 const DiningScene = lazy(() => import('../three/DiningScene'))
 
 export default function Home() {
-  const { info, loading, error } = useRestaurant()
+  const { info } = useRestaurant()
   const featured = useApi('/api/menu?featured=1')
+  const { t, place, money, item, band, hours } = useI18n()
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -27,65 +28,68 @@ export default function Home() {
         </div>
         <div className="hero-scrim" />
         <div className="hero-copy">
-          <p className="eyebrow">افغاني رستورانت · {info?.city || 'کابل'}</p>
-          <h1>دسترخوان</h1>
-          <p className="lede">{info?.tagline || 'د کابل خوند، پر یوه دسترخوان'}</p>
-          <p className="note">{info?.hero_note}</p>
+          <p className="eyebrow">{t('home.eyebrow', { city: place.city })}</p>
+          <h1>{place.brand}</h1>
+          <p className="lede">{place.tagline}</p>
+          <p className="note">{place.heroNote}</p>
           <div className="hero-actions">
-            <Link className="btn btn-gold" to="/menu">مینو وګورئ</Link>
-            <Link className="btn btn-ghost" to="/reserve">میز ونیسئ</Link>
+            <Link className="btn btn-gold" to="/menu">{t('home.menu')}</Link>
+            <Link className="btn btn-ghost" to="/reserve">{t('home.reserve')}</Link>
           </div>
         </div>
-        <p className="hero-hint">د صحنې د څرخولو لپاره یې وښکئ</p>
+        <p className="hero-hint">{t('home.drag')}</p>
       </section>
 
       <section className="band">
-        <p>قابلي · منتو · چکن تکہ · بولاني · فیرني · شین چای</p>
+        <p>{band}</p>
       </section>
 
       <section className="section">
         <div className="section-head">
-          <p className="eyebrow dark">د نن شپه</p>
-          <h2>هغه خوندونه چې میلمانه یې بیا راولي</h2>
+          <p className="eyebrow dark">{t('home.tonight')}</p>
+          <h2>{t('home.tonightTitle')}</h2>
         </div>
-        {featured.loading && <p className="status">مینو راځي…</p>}
-        {featured.error && <p className="status error">مینو رانغی. Laravel سرور وګورئ.</p>}
+        {featured.loading && <p className="status">{t('home.menuLoading')}</p>}
+        {featured.error && <p className="status error">{t('home.menuError')}</p>}
         <div className="feature-grid">
-          {(featured.data?.items || []).map((item) => (
-            <article key={item.id} className="feature-card">
-              <p className="eyebrow dark">{item.category}</p>
-              <h3>{item.name}</h3>
-              <p>{item.description}</p>
-              <strong>{money(item.price)}</strong>
-            </article>
-          ))}
+          {(featured.data?.items || []).map((dish) => {
+            const card = item(dish)
+            return (
+              <article key={card.id} className="feature-card">
+                <p className="eyebrow dark">{card.category}</p>
+                <h3>{card.name}</h3>
+                <p>{card.description}</p>
+                <strong>{money(card.price)}</strong>
+              </article>
+            )
+          })}
         </div>
-        <Link className="text-link" to="/menu">ټول مینو</Link>
+        <Link className="text-link" to="/menu">{t('home.allMenu')}</Link>
       </section>
 
       <section className="quote-band">
         <blockquote>
-          {loading ? '…' : error ? 'له پخلنځي سره اړیکه ونه نیول شوه.' : info.hero_note}
+          {place.heroNote}
         </blockquote>
-        <Link className="btn btn-gold" to="/about">کیسه ولولئ</Link>
+        <Link className="btn btn-gold" to="/about">{t('home.readStory')}</Link>
       </section>
 
       <section className="section visit">
         <div>
-          <p className="eyebrow dark">راتلل</p>
-          <h2>کارته ۴، کله چې وږي شئ</h2>
-          <p>{info ? `${info.address}، ${info.city}` : 'کابل'}</p>
-          <p className="phone">{info?.phone}</p>
+          <p className="eyebrow dark">{t('home.visit')}</p>
+          <h2>{t('home.visitTitle')}</h2>
+          <p>{place.line}</p>
+          <p className="phone"><bdi dir="ltr">{info?.phone}</bdi></p>
         </div>
         <ul className="hours">
-          {(info?.hours || []).map((row) => (
+          {hours.map((row) => (
             <li key={row.days}>
               <span>{row.days}</span>
               <span>{row.time}</span>
             </li>
           ))}
         </ul>
-        <Link className="btn btn-dark" to="/reserve">خالي میز وګورئ</Link>
+        <Link className="btn btn-dark" to="/reserve">{t('home.freeTable')}</Link>
       </section>
     </main>
   )

@@ -1,19 +1,19 @@
 import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
-import { useRestaurant } from '../context'
+import { useI18n } from '../i18n'
 
 const DishView = lazy(() => import('../three/DishView'))
 
 export default function About() {
-  const { info, loading, error } = useRestaurant()
-  const paragraphs = (info?.about || '').split('\n\n').filter(Boolean)
+  const { t, place } = useI18n()
+  const paragraphs = place.about.split('\n\n').filter(Boolean)
 
   return (
     <main className="page">
       <header className="page-hero">
-        <p className="eyebrow dark">زموږ کیسه</p>
-        <h1>{info?.name || 'دسترخوان'}</h1>
-        <p>{info?.tagline}</p>
+        <p className="eyebrow dark">{t('nav.story')}</p>
+        <h1>{place.brand}</h1>
+        <p>{place.tagline}</p>
       </header>
 
       <section className="about-grid">
@@ -23,27 +23,25 @@ export default function About() {
           </Suspense>
         </div>
         <div>
-          {loading && <p className="status">کیسه راځي…</p>}
-          {error && <p className="status error">د رستورانت معلومات رانغلل.</p>}
           {paragraphs.map((paragraph) => (
             <p key={paragraph.slice(0, 24)}>{paragraph}</p>
           ))}
-          <Link className="btn btn-dark" to="/reserve">میز ونیسئ</Link>
+          <Link className="btn btn-dark" to="/reserve">{t('nav.reserve')}</Link>
         </div>
       </section>
 
       <section className="section points">
         <article>
-          <h2>فرش</h2>
-          <p>یوه خونه د کور په ډول ده: توشک، دسترخوان، او ډوډۍ پر ځمکه.</p>
+          <h2>{t('about.floor')}</h2>
+          <p>{t('about.floorText')}</p>
         </article>
         <article>
-          <h2>سالون</h2>
-          <p>که میز غواړئ، اته میزونه دي. له دوه کسانو څخه تر شپږو پورې.</p>
+          <h2>{t('about.salon')}</h2>
+          <p>{t('about.salonText')}</p>
         </article>
         <article>
-          <h2>پخلنځی</h2>
-          <p>وریجې زعفراني، کباب پر سکرو، او نان هماغه ورځ له تنوره.</p>
+          <h2>{t('about.kitchen')}</h2>
+          <p>{t('about.kitchenText')}</p>
         </article>
       </section>
     </main>

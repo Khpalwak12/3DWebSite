@@ -82,7 +82,7 @@ function TableMesh({ table, selected, onSelect }) {
       <Html center position={[0, 0.85, 0]} distanceFactor={8} style={{ pointerEvents: 'none' }}>
         <div className={`table-tag ${selected ? 'is-on' : ''} ${table.available ? '' : 'is-off'}`}>
           <strong>{table.label}</strong>
-          <span>{table.seats} کسان</span>
+          <span>{table.seatsLabel}</span>
         </div>
       </Html>
     </group>

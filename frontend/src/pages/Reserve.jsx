@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
-import { api, formatWhen, localISODate, TIME_SLOTS } from '../api'
+import { api, localISODate, TIME_SLOTS } from '../api'
 import { useApi } from '../context'
+import { useI18n } from '../i18n'
 
 const TableMap = lazy(() => import('../three/TableMap'))
 
@@ -15,6 +16,7 @@ function slotPassed(date, time) {
 }
 
 export default function Reserve() {
+  const { t, lang, formatNumber, formatWhen, tableLabel, seatsLabel } = useI18n()
   const [form, setForm] = useState({
     date: localISODate(),
     time: '19:00',
@@ -30,7 +32,14 @@ export default function Reserve() {
 
   const query = `/api/tables?date=${form.date}&time=${form.time}&guests=${form.guests}`
   const { loading, error, data } = useApi(query)
-  const tables = data?.tables || []
+  const tables = useMemo(
+    () => (data?.tables || []).map((table) => ({
+      ...table,
+      label: tableLabel(table.label),
+      seatsLabel: seatsLabel(table.seats),
+    })),
+    [data, tableLabel, seatsLabel],
+  )
   const selected = tables.find((table) => table.id === form.dining_table_id) || null
   const openCount = tables.filter((table) => table.available).length
 
@@ -66,7 +75,7 @@ export default function Reserve() {
     setErrors({})
 
     if (!form.dining_table_id) {
-      setErrors({ dining_table_id: ['له سالون څخه یو خالي میز وټاکئ.'] })
+      setErrors({ dining_table_id: [t('reserve.pickTable')] })
       return
     }
 
@@ -74,11 +83,12 @@ export default function Reserve() {
     try {
       const result = await api('/api/reservations', {
         method: 'POST',
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, locale: lang }),
       })
       setDone(result.reservation)
     } catch (err) {
-      setErrors(err.errors && Object.keys(err.errors).length ? err.errors : { form: [err.message] })
+      const fallback = !err.message || err.message === 'request-failed' ? t('error.network') : err.message
+      setErrors(err.errors && Object.keys(err.errors).length ? err.errors : { form: [fallback] })
     } finally {
       setSubmitting(false)
     }
@@ -88,14 +98,21 @@ export default function Reserve() {
     return (
       <main className="page">
         <section className="success">
-          <p className="eyebrow dark">ثبت شو</p>
-          <h1>ستاسو دسترخوان برابرېږي</h1>
+          <p className="eyebrow dark">{t('reserve.booked')}</p>
+          <h1>{t('reserve.ready')}</h1>
           <p>
-            {done.guest_name}، {done.table} د {new Intl.NumberFormat('fa-AF').format(done.guests)} کسانو لپاره {formatWhen(done.reserved_at)} نیول شوی دی.
+            {t('reserve.held', {
+              name: done.guest_name,
+              table: tableLabel(done.table),
+              guests: formatNumber(done.guests),
+              when: formatWhen(done.reserved_at),
+            })}
           </p>
-          <p>موږ به پر {done.phone} تایید درکړو. شمېره یې {done.id} ده.</p>
+          <p>
+            {t('reserve.confirmLead')}<bdi dir="ltr">{done.phone}</bdi>{t('reserve.confirmTail', { id: formatNumber(done.id) })}
+          </p>
           <button type="button" className="btn btn-dark" onClick={() => { setDone(null); setForm((current) => ({ ...current, dining_table_id: null, notes: '' })) }}>
-            بل ځای ونیسئ
+            {t('reserve.another')}
           </button>
         </section>
       </main>
@@ -105,21 +122,21 @@ export default function Reserve() {
   return (
     <main className="page">
       <header className="page-hero">
-        <p className="eyebrow dark">ځای نیول</p>
-        <h1>په سالون کې میز وټاکئ</h1>
-        <p>هره ناسته نږدې یو نیم ساعت وخت نیسي. زرین میز خالي دی، تور سور نیول شوی، او خړ میز د دومره کسانو لپاره کوچنی دی.</p>
+        <p className="eyebrow dark">{t('reserve.eyebrow')}</p>
+        <h1>{t('reserve.title')}</h1>
+        <p>{t('reserve.intro')}</p>
       </header>
 
       <div className="reserve-layout">
         <form className="reserve-form" onSubmit={onSubmit}>
           <label>
-            نېټه
+            {t('reserve.date')}
             <input type="date" name="date" min={localISODate()} value={form.date} onChange={update} required />
           </label>
           <FieldError errors={errors} name="date" />
 
           <label>
-            وخت
+            {t('reserve.time')}
             <select name="time" value={form.time} onChange={update}>
               {slots.map((slot) => (
                 <option key={slot.time} value={slot.time} disabled={slot.disabled}>{slot.time}</option>
@@ -129,44 +146,44 @@ export default function Reserve() {
           <FieldError errors={errors} name="time" />
 
           <label>
-            کسان
+            {t('reserve.guests')}
             <select name="guests" value={form.guests} onChange={update}>
               {Array.from({ length: 8 }, (_, index) => index + 1).map((count) => (
-                <option key={count} value={count}>{count}</option>
+                <option key={count} value={count}>{formatNumber(count)}</option>
               ))}
             </select>
           </label>
           <FieldError errors={errors} name="guests" />
 
           <p className="pick-note">
-            {loading && 'میزونه کتل کېږي…'}
-            {!loading && error && 'د میزونو لیست رانغی.'}
-            {!loading && !error && (openCount ? `${new Intl.NumberFormat('fa-AF').format(openCount)} میزونه خالي دي.` : 'په دې وخت کې د دومره کسانو لپاره خالي میز نشته.')}
-            {selected ? ` ټاکل شوی: ${selected.label}.` : ''}
+            {loading && t('reserve.checking')}
+            {!loading && error && t('reserve.listError')}
+            {!loading && !error && (openCount ? t('reserve.open', { n: formatNumber(openCount) }) : t('reserve.none'))}
+            {selected ? t('reserve.selected', { name: selected.label }) : ''}
           </p>
           <FieldError errors={errors} name="dining_table_id" />
 
           <label>
-            نوم
+            {t('reserve.name')}
             <input name="guest_name" value={form.guest_name} onChange={update} autoComplete="name" required />
           </label>
           <FieldError errors={errors} name="guest_name" />
 
           <label>
-            تلیفون
-            <input name="phone" value={form.phone} onChange={update} autoComplete="tel" placeholder="0790000000" required />
+            {t('reserve.phone')}
+            <input name="phone" value={form.phone} onChange={update} autoComplete="tel" placeholder="0790000000" dir="ltr" required />
           </label>
           <FieldError errors={errors} name="phone" />
 
           <label>
-            یادښت
-            <textarea name="notes" value={form.notes} onChange={update} rows={3} placeholder="د بېلګې په توګه: د کړکۍ څنګ، یا د ماشوم چوکۍ" />
+            {t('reserve.note')}
+            <textarea name="notes" value={form.notes} onChange={update} rows={3} placeholder={t('reserve.notePlaceholder')} />
           </label>
           <FieldError errors={errors} name="notes" />
           <FieldError errors={errors} name="form" />
 
           <button className="btn btn-dark" type="submit" disabled={submitting}>
-            {submitting ? 'ثبتېږي…' : 'میز ثبت کړئ'}
+            {submitting ? t('reserve.submitting') : t('reserve.submit')}
           </button>
         </form>
 
@@ -179,10 +196,10 @@ export default function Reserve() {
             />
           </Suspense>
           <ul className="legend">
-            <li><i className="swatch free" /> خالي</li>
-            <li><i className="swatch taken" /> نیول شوی</li>
-            <li><i className="swatch small" /> کوچنی</li>
-            <li><i className="swatch chosen" /> ستاسو میز</li>
+            <li><i className="swatch free" /> {t('reserve.free')}</li>
+            <li><i className="swatch taken" /> {t('reserve.taken')}</li>
+            <li><i className="swatch small" /> {t('reserve.small')}</li>
+            <li><i className="swatch chosen" /> {t('reserve.yours')}</li>
           </ul>
         </div>
       </div>

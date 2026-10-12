@@ -44,6 +44,8 @@ body {
   line-height: 1.85;
 }
 
+html[dir="ltr"] body { line-height: 1.6; }
+
 a { color: inherit; }
 
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -63,7 +65,7 @@ p { margin: 0; }
 
 .nav {
   position: fixed;
-  z-index: 30;
+  z-index: 50;
   inset: 0 0 auto 0;
   display: flex;
   align-items: center;
@@ -91,6 +93,37 @@ p { margin: 0; }
 
 .brand span { font-size: 1.45rem; line-height: 1.2; }
 .brand small { color: var(--gold-2); font-size: 0.78rem; }
+
+.nav-side {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.lang-switch {
+  display: flex;
+  gap: 0.15rem;
+  padding: 0.15rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-dark-line);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lang-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--cream);
+  border-radius: 999px;
+  padding: 0.12rem 0.55rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.lang-switch button.on {
+  background: rgba(231, 203, 144, 0.22);
+  color: var(--gold-2);
+}
 
 .nav nav {
   display: flex;
@@ -168,7 +201,7 @@ p { margin: 0; }
 .hero-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to left, rgba(20, 14, 11, 0.28) 0%, rgba(20, 14, 11, 0.08) 46%, rgba(20, 14, 11, 0) 72%);
+  background: linear-gradient(to inline-end, rgba(20, 14, 11, 0.28) 0%, rgba(20, 14, 11, 0.08) 46%, rgba(20, 14, 11, 0) 72%);
   pointer-events: none;
 }
 
@@ -176,7 +209,7 @@ p { margin: 0; }
   position: absolute;
   z-index: 2;
   top: 22%;
-  right: 6vw;
+  inset-inline-start: 6vw;
   width: min(36rem, 48vw);
   padding: 1.35rem 1.45rem 1.45rem;
   border-radius: 1.6rem;
@@ -193,7 +226,7 @@ p { margin: 0; }
 .hero-hint {
   position: absolute;
   z-index: 2;
-  left: 4vw;
+  inset-inline-end: 4vw;
   bottom: 1.4rem;
   color: var(--gold-2);
   font-size: 0.92rem;
@@ -428,7 +461,7 @@ p { margin: 0; }
   grid-template-columns: auto 1fr auto;
   gap: 1rem;
   align-items: center;
-  text-align: right;
+  text-align: start;
   background: transparent;
   border: 0;
   padding: 0.95rem 0.2rem;
@@ -699,12 +732,12 @@ p { margin: 0; }
   .hero-copy {
     position: relative;
     top: auto;
-    right: auto;
+    inset-inline-start: auto;
     width: auto;
     padding: 1.3rem 1.2rem 2.4rem;
     pointer-events: auto;
   }
-  .hero-hint { right: 1.2rem; left: auto; bottom: auto; top: calc(58svh - 2.2rem); }
+  .hero-hint { inset-inline-end: 1.2rem; inset-inline-start: auto; bottom: auto; top: calc(58svh - 2.2rem); }
   .menu-block button { grid-template-columns: auto 1fr; }
   .menu-block .price { grid-column: 2; }
 }

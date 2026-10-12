@@ -51,6 +51,7 @@ class MenuController extends Controller
             'spice' => $item->spice,
             'kind' => $item->kind,
             'category' => $item->category?->name,
+            'category_slug' => $item->category?->slug,
         ];
     }
 }

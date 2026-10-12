@@ -11,7 +11,7 @@ export async function api(path, options = {}) {
   const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    const error = new Error(data.message || 'له سرور سره اړیکه ونه نیول شوه.')
+    const error = new Error(data.message || 'request-failed')
     error.errors = data.errors || {}
     error.status = response.status
     throw error

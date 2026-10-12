@@ -1,31 +1,33 @@
 import { Link } from 'react-router-dom'
 import { useRestaurant } from '../context'
+import { useI18n } from '../i18n'
 
 export default function Footer() {
   const { info } = useRestaurant()
+  const { place, hours, t } = useI18n()
 
   return (
     <footer className="footer">
       <div>
-        <p className="brand-mark">دسترخوان</p>
-        <p>{info?.tagline || 'د کابل خوند، پر یوه دسترخوان'}</p>
+        <p className="brand-mark">{place.brand}</p>
+        <p>{place.tagline}</p>
       </div>
       <div>
-        <h2>پته</h2>
-        <p>{info ? `${info.address}، ${info.city}` : 'کابل'}</p>
-        <p><a href={`tel:${info?.phone || ''}`}>{info?.phone}</a></p>
+        <h2>{t('footer.address')}</h2>
+        <p>{place.line}</p>
+        <p><a href={`tel:${info?.phone || ''}`}><bdi dir="ltr">{info?.phone}</bdi></a></p>
       </div>
       <div>
-        <h2>ساعتونه</h2>
-        {(info?.hours || []).map((row) => (
+        <h2>{t('footer.hours')}</h2>
+        {hours.map((row) => (
           <p key={row.days}>{row.days}: {row.time}</p>
         ))}
       </div>
       <div>
-        <h2>پاڼې</h2>
-        <p><Link to="/menu">مینو</Link></p>
-        <p><Link to="/reserve">ځای نیول</Link></p>
-        <p><Link to="/about">زموږ کیسه</Link></p>
+        <h2>{t('footer.pages')}</h2>
+        <p><Link to="/menu">{t('nav.menu')}</Link></p>
+        <p><Link to="/reserve">{t('footer.reserve')}</Link></p>
+        <p><Link to="/about">{t('nav.story')}</Link></p>
       </div>
     </footer>
   )
