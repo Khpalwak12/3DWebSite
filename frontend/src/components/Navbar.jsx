@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { usePlace } from '../content'
 import { useI18n } from '../i18n'
 
 export default function Navbar() {
-  const { place, t, lang, setLang, locales } = useI18n()
+  const { t, lang, setLang, locales } = useI18n()
+  const place = usePlace()
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)

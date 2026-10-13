@@ -1,11 +1,13 @@
 import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
+import { usePlace } from '../content'
 import { useI18n } from '../i18n'
 
 const DishView = lazy(() => import('../three/DishView'))
 
 export default function About() {
-  const { t, place } = useI18n()
+  const { t } = useI18n()
+  const place = usePlace()
   const paragraphs = place.about.split('\n\n').filter(Boolean)
 
   return (

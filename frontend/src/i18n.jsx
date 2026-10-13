@@ -339,6 +339,58 @@ function pick(pack, lang) {
   return pack?.[lang] || pack?.ps || ''
 }
 
+function filled(value, fallback) {
+  return typeof value === 'string' && value.trim() ? value : fallback
+}
+
+export function siteDefaults() {
+  const langs = ['ps', 'fa', 'en']
+  const pack = (keys) => Object.fromEntries(langs.map((lang) => [
+    lang,
+    Object.fromEntries(Object.entries(keys).map(([field, key]) => [field, ui[key][lang]])),
+  ]))
+
+  return {
+    welcome: pack({
+      meet: 'home.meet',
+      kicker: 'home.trueFlavor',
+      heading: 'home.experience',
+      body: 'home.welcomeBody',
+    }),
+    tonight: pack({
+      eyebrow: 'home.tonight',
+      title: 'home.tonightTitle',
+    }),
+    place: copy,
+    hours: HOURS.map((row) => ({
+      time: row.time,
+      days: { ps: ui[row.key].ps, fa: ui[row.key].fa, en: ui[row.key].en },
+    })),
+  }
+}
+
+export function dishDefaults(slug) {
+  const dish = dishes[slug]
+  const blank = { name: '', description: '' }
+  if (!dish) return { ps: blank, fa: { ...blank }, en: { ...blank } }
+  return {
+    ps: { name: dish.name.ps, description: dish.description.ps },
+    fa: { name: dish.name.fa, description: dish.description.fa },
+    en: { name: dish.name.en, description: dish.description.en },
+  }
+}
+
+export function categoryDefaults(slug) {
+  const group = categories[slug]
+  const blank = { name: '', description: '' }
+  if (!group) return { ps: blank, fa: { ...blank }, en: { ...blank } }
+  return {
+    ps: { name: group.name.ps, description: group.description.ps },
+    fa: { name: group.name.fa, description: group.description.fa },
+    en: { name: group.name.en, description: group.description.en },
+  }
+}
+
 function fill(template, vars) {
   return Object.entries(vars).reduce(
     (text, [name, value]) => text.replaceAll(`{${name}}`, value ?? ''),
@@ -406,20 +458,20 @@ export function LanguageProvider({ children }) {
       }).format(new Date(String(value).replace(' ', 'T'))),
       item: (dish) => ({
         ...dish,
-        name: pick(dishes[dish.slug]?.name, lang) || dish.name,
-        description: pick(dishes[dish.slug]?.description, lang) || dish.description,
-        category: pick(categories[dish.category_slug]?.name, lang) || dish.category,
+        name: filled(dish.translations?.[lang]?.name, pick(dishes[dish.slug]?.name, lang) || dish.name),
+        description: filled(dish.translations?.[lang]?.description, pick(dishes[dish.slug]?.description, lang) || dish.description),
+        category: filled(dish.category_translations?.[lang]?.name, pick(categories[dish.category_slug]?.name, lang) || dish.category),
       }),
       category: (group) => ({
         ...group,
-        name: pick(categories[group.slug]?.name, lang) || group.name,
-        description: pick(categories[group.slug]?.description, lang) || group.description,
+        name: filled(group.translations?.[lang]?.name, pick(categories[group.slug]?.name, lang) || group.name),
+        description: filled(group.translations?.[lang]?.description, pick(categories[group.slug]?.description, lang) || group.description),
         items: (group.items || []).map((dish) => ({
           ...dish,
           category_slug: group.slug,
-          name: pick(dishes[dish.slug]?.name, lang) || dish.name,
-          description: pick(dishes[dish.slug]?.description, lang) || dish.description,
-          category: pick(categories[group.slug]?.name, lang) || dish.category,
+          name: filled(dish.translations?.[lang]?.name, pick(dishes[dish.slug]?.name, lang) || dish.name),
+          description: filled(dish.translations?.[lang]?.description, pick(dishes[dish.slug]?.description, lang) || dish.description),
+          category: filled(group.translations?.[lang]?.name, pick(categories[group.slug]?.name, lang) || dish.category),
         })),
       }),
       dishName: (slug) => pick(dishes[slug]?.name, lang),

@@ -1,3 +1,49 @@
+const ADMIN_TOKEN = 'dastarkhwan-admin'
+
+export function adminToken() {
+  try {
+    return localStorage.getItem(ADMIN_TOKEN) || ''
+  } catch {
+    return ''
+  }
+}
+
+export function setAdminToken(token) {
+  if (token) localStorage.setItem(ADMIN_TOKEN, token)
+  else localStorage.removeItem(ADMIN_TOKEN)
+}
+
+export async function adminFetch(path, options = {}) {
+  const headers = {
+    Accept: 'application/json',
+    ...(options.headers || {}),
+  }
+  const token = adminToken()
+  if (token) headers.Authorization = `Bearer ${token}`
+
+  let body = options.body
+  if (body && !(body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json'
+    body = JSON.stringify(body)
+  }
+
+  const response = await fetch(path, { ...options, headers, body })
+  const data = await response.json().catch(() => ({}))
+
+  if (response.status === 401) {
+    setAdminToken('')
+  }
+
+  if (!response.ok) {
+    const error = new Error(data.message || 'request-failed')
+    error.errors = data.errors || {}
+    error.status = response.status
+    throw error
+  }
+
+  return data
+}
+
 export async function api(path, options = {}) {
   const response = await fetch(path, {
     ...options,

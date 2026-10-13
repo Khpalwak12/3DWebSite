@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom'
+import { useHours, usePhone, usePlace } from '../content'
 import { useRestaurant } from '../context'
 import { useI18n } from '../i18n'
 
 export default function Footer() {
   const { info } = useRestaurant()
-  const { place, hours, t } = useI18n()
+  const { t } = useI18n()
+  const place = usePlace()
+  const hours = useHours()
+  const phone = usePhone(info?.phone || '')
 
   return (
     <footer className="footer">
@@ -15,7 +19,7 @@ export default function Footer() {
       <div>
         <h2>{t('footer.address')}</h2>
         <p>{place.line}</p>
-        <p><a href={`tel:${info?.phone || ''}`}><bdi dir="ltr">{info?.phone}</bdi></a></p>
+        <p><a href={`tel:${phone}`}><bdi dir="ltr">{phone}</bdi></a></p>
       </div>
       <div>
         <h2>{t('footer.hours')}</h2>
@@ -28,6 +32,7 @@ export default function Footer() {
         <p><Link to="/menu">{t('nav.menu')}</Link></p>
         <p><Link to="/reserve">{t('footer.reserve')}</Link></p>
         <p><Link to="/about">{t('nav.story')}</Link></p>
+        <p><Link to="/admin">ډشبورډ</Link></p>
       </div>
     </footer>
   )

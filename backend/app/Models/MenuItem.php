@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['category_id', 'name', 'slug', 'description', 'price', 'is_featured', 'spice', 'kind', 'sort_order'])]
+#[Fillable(['category_id', 'name', 'slug', 'description', 'price', 'is_featured', 'spice', 'kind', 'sort_order', 'translations', 'images'])]
 class MenuItem extends Model
 {
     protected function casts(): array
@@ -15,6 +15,8 @@ class MenuItem extends Model
             'price' => 'decimal:2',
             'is_featured' => 'boolean',
             'spice' => 'integer',
+            'translations' => 'array',
+            'images' => 'array',
         ];
     }
 

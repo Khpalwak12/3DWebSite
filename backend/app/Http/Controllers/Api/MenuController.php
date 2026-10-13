@@ -34,6 +34,7 @@ class MenuController extends Controller
                 'name' => $category->name,
                 'slug' => $category->slug,
                 'description' => $category->description,
+                'translations' => $category->translations,
                 'items' => $category->menuItems->map(fn (MenuItem $item) => $this->item($item))->values(),
             ])->values(),
         ]);
@@ -50,8 +51,11 @@ class MenuController extends Controller
             'featured' => $item->is_featured,
             'spice' => $item->spice,
             'kind' => $item->kind,
+            'translations' => $item->translations,
+            'images' => $item->images ?? [],
             'category' => $item->category?->name,
             'category_slug' => $item->category?->slug,
+            'category_translations' => $item->category?->translations,
         ];
     }
 }

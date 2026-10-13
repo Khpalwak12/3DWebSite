@@ -1,23 +1,22 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import DishSlides from '../components/DishSlides'
+import { useHours, usePhone, usePlace, useTonight, useWelcome } from '../content'
 import { useApi, useRestaurant } from '../context'
 import { useI18n } from '../i18n'
-
-const SLIDES = {
-  qabili: ['/slides/qabili-1.jpg', '/slides/qabili-2.jpg'],
-  'chicken-tikka': ['/slides/tikka-1.jpg', '/slides/tikka-2.jpg'],
-  bolani: ['/slides/bolani-1.jpg', '/slides/bolani-2.jpg'],
-  mantu: ['/slides/mantu-1.jpg', '/slides/mantu-2.jpg'],
-  firni: ['/slides/firni-1.jpg', '/slides/firni-2.jpg'],
-}
+import { SLIDES } from '../slides'
 
 const DiningScene = lazy(() => import('../three/DiningScene'))
 
 export default function Home() {
   const { info } = useRestaurant()
   const featured = useApi('/api/menu?featured=1')
-  const { t, place, money, item, band, hours } = useI18n()
+  const { t, money, item, band } = useI18n()
+  const place = usePlace()
+  const hours = useHours()
+  const welcome = useWelcome()
+  const tonight = useTonight()
+  const phone = usePhone(info?.phone || '')
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -50,16 +49,16 @@ export default function Home() {
       </section>
 
       <section className="welcome">
-        <h2 className="welcome-title">{t('home.meet')}</h2>
+        <h2 className="welcome-title">{welcome.meet}</h2>
         <div className="welcome-layout">
           <div className="welcome-photos">
-            <img className="welcome-pizza" src="/welcome-pizza.jpg" alt={t('home.pizzaAlt')} />
-            <img className="welcome-platter" src="/welcome-platter.jpg" alt={t('home.platterAlt')} />
+            <img className="welcome-pizza" src={welcome.left} alt={t('home.pizzaAlt')} />
+            <img className="welcome-platter" src={welcome.right} alt={t('home.platterAlt')} />
           </div>
           <div className="welcome-copy">
-            <p className="welcome-kicker">{t('home.trueFlavor')}</p>
-            <h3>{t('home.experience')}</h3>
-            <p>{t('home.welcomeBody')}</p>
+            <p className="welcome-kicker">{welcome.kicker}</p>
+            <h3>{welcome.heading}</h3>
+            <p>{welcome.body}</p>
           </div>
         </div>
       </section>
@@ -70,8 +69,8 @@ export default function Home() {
 
       <section className="section">
         <div className="section-head">
-          <p className="eyebrow dark">{t('home.tonight')}</p>
-          <h2>{t('home.tonightTitle')}</h2>
+          <p className="eyebrow dark">{tonight.eyebrow}</p>
+          <h2>{tonight.title}</h2>
         </div>
         {featured.loading && <p className="status">{t('home.menuLoading')}</p>}
         {featured.error && <p className="status error">{t('home.menuError')}</p>}
@@ -80,7 +79,7 @@ export default function Home() {
             const card = item(dish)
             return (
               <article key={card.id} className={`dish-row ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                <DishSlides images={SLIDES[card.slug] || []} alt={card.name} />
+                <DishSlides images={card.images?.length ? card.images : (SLIDES[card.slug] || [])} alt={card.name} />
                 <div className="dish-copy">
                   <p className="eyebrow dark">{card.category}</p>
                   <h3>{card.name}</h3>
@@ -106,7 +105,7 @@ export default function Home() {
           <p className="eyebrow dark">{t('home.visit')}</p>
           <h2>{t('home.visitTitle')}</h2>
           <p>{place.line}</p>
-          <p className="phone"><bdi dir="ltr">{info?.phone}</bdi></p>
+          <p className="phone"><bdi dir="ltr">{phone}</bdi></p>
         </div>
         <ul className="hours">
           {hours.map((row) => (
