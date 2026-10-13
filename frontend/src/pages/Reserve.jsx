@@ -1,9 +1,8 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { api, localISODate, TIME_SLOTS } from '../api'
+import SalonMap from '../components/SalonMap'
 import { useApi } from '../context'
 import { useI18n } from '../i18n'
-
-const TableMap = lazy(() => import('../three/TableMap'))
 
 function FieldError({ errors, name }) {
   const message = errors?.[name]?.[0]
@@ -188,13 +187,11 @@ export default function Reserve() {
         </form>
 
         <div className="map-panel">
-          <Suspense fallback={<div className="scene-fallback" />}>
-            <TableMap
-              tables={tables}
-              selectedId={form.dining_table_id}
-              onSelect={(id) => setForm((current) => ({ ...current, dining_table_id: id }))}
-            />
-          </Suspense>
+          <SalonMap
+            tables={tables}
+            selectedId={form.dining_table_id}
+            onSelect={(id) => setForm((current) => ({ ...current, dining_table_id: id }))}
+          />
           <ul className="legend">
             <li><i className="swatch free" /> {t('reserve.free')}</li>
             <li><i className="swatch taken" /> {t('reserve.taken')}</li>

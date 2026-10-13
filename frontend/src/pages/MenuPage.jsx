@@ -1,9 +1,9 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import DishSlides from '../components/DishSlides'
 import { useApi } from '../context'
 import { useI18n } from '../i18n'
-
-const DishView = lazy(() => import('../three/DishView'))
+import { photosFor } from '../slides'
 
 export default function MenuPage() {
   const { loading, error, data } = useApi('/api/menu')
@@ -87,9 +87,7 @@ export default function MenuPage() {
         <div className="dialog-back" onClick={() => setActive(null)}>
           <article className="dialog" role="dialog" aria-modal="true" aria-labelledby="dish-title" onClick={(event) => event.stopPropagation()}>
             <div className="dialog-scene">
-              <Suspense fallback={<div className="scene-fallback" />}>
-                <DishView kind={shown.kind} />
-              </Suspense>
+              <DishSlides images={photosFor(shown)} alt={shown.name} />
             </div>
             <div className="dialog-copy">
               <p className="eyebrow dark">{shown.category}</p>

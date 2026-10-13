@@ -1,12 +1,9 @@
-import { lazy, Suspense, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import DishSlides from '../components/DishSlides'
 import { useHours, usePhone, usePlace, useTonight, useWelcome } from '../content'
 import { useApi, useRestaurant } from '../context'
 import { useI18n } from '../i18n'
-import { SLIDES } from '../slides'
-
-const DiningScene = lazy(() => import('../three/DiningScene'))
+import { HERO_SLIDES, SLIDES } from '../slides'
 
 export default function Home() {
   const { info } = useRestaurant()
@@ -18,21 +15,11 @@ export default function Home() {
   const tonight = useTonight()
   const phone = usePhone(info?.phone || '')
 
-  useEffect(() => {
-    const id = window.setTimeout(() => {
-      import('../three/DishView')
-      import('../three/TableMap')
-    }, 1200)
-    return () => window.clearTimeout(id)
-  }, [])
-
   return (
     <main>
       <section className="hero">
         <div className="hero-canvas">
-          <Suspense fallback={<div className="scene-fallback" />}>
-            <DiningScene />
-          </Suspense>
+          <DishSlides images={HERO_SLIDES} alt={place.brand} />
         </div>
         <div className="hero-scrim" />
         <div className="hero-copy">

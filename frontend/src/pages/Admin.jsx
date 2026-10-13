@@ -4,18 +4,194 @@ import { adminFetch, adminToken, setAdminToken } from '../api'
 import { categoryDefaults, dishDefaults, siteDefaults } from '../i18n'
 import { SLIDES, WELCOME_IMAGES } from '../slides'
 
+const LANG_KEY = 'dastarkhwan-admin-lang'
+
 const LANGS = [
-  { id: 'ps', label: 'پښتو' },
-  { id: 'fa', label: 'دری' },
-  { id: 'en', label: 'English' },
+  { id: 'ps', label: 'پښتو', dir: 'rtl' },
+  { id: 'fa', label: 'دری', dir: 'rtl' },
+  { id: 'en', label: 'English', dir: 'ltr' },
 ]
 
-const TABS = [
-  { id: 'home', label: 'کور' },
-  { id: 'menu', label: 'مینو' },
-  { id: 'place', label: 'رستورانت' },
-  { id: 'bookings', label: 'ځای نیونې' },
-]
+const UI = {
+  ps: {
+    dashboard: 'ډشبورډ',
+    password: 'پټنوم',
+    login: 'ننوتل',
+    back: 'بېرته پاڼې ته',
+    badPassword: 'پټنوم سم نه دی.',
+    tabs: { home: 'کور', menu: 'مینو', place: 'رستورانت', bookings: 'ځای نیونې' },
+    viewSite: 'پاڼه وګورئ',
+    logout: 'وتل',
+    working: 'روان دی…',
+    saved: 'خوندي شو.',
+    loadError: 'معلومات رانغلل. سرور وګورئ.',
+    bookingsError: 'ځای نیونې رانغلې.',
+    saveError: 'خوندي نه شو. ډکې خانې وګورئ.',
+    homeTitle: 'د کور پاڼه',
+    welcome: 'ښه راغلاست',
+    title: 'سرلیک',
+    kicker: 'لنډ نوم',
+    heading: 'سرخط',
+    body: 'متن',
+    leftImage: 'کیڼ انځور',
+    rightImage: 'ښي انځور',
+    save: 'خوندي کړئ',
+    tonight: 'د نن شپه',
+    eyebrow: 'کوچنی سرلیک',
+    menuTitle: 'مینو',
+    group: 'ډله',
+    name: 'نوم',
+    short: 'لنډه',
+    saveGroup: 'ډله خوندي کړئ',
+    dishName: 'د خوړو نوم',
+    description: 'تشریح',
+    price: 'بیه',
+    spice: 'توندوالی',
+    spices: ['ملایم', 'لږ توند', 'توند', 'ډېر توند'],
+    featured: 'په کور پاڼه کې ښکاره شي',
+    earlier: 'مخکې',
+    later: 'وروسته',
+    remove: 'لیرې',
+    addImage: 'انځور زیات کړئ',
+    saveDish: 'خوړه خوندي کړئ',
+    placeTitle: 'رستورانت',
+    phone: 'ټیلیفون',
+    tagline: 'شعار',
+    heroNote: 'د سر پاڼې یادښت',
+    story: 'کیسه',
+    address: 'پته',
+    city: 'ښار',
+    days: 'ورځې',
+    hours: 'ساعت',
+    bookingsTitle: 'ځای نیونې',
+    noBookings: 'تر اوسه ځای نه دی نیول شوی.',
+    guests: 'کسان',
+    table: 'میز {n}',
+    statuses: { pending: 'پاتې', confirmed: 'تایید', cancelled: 'لغوه' },
+  },
+  fa: {
+    dashboard: 'داشبورد',
+    password: 'گذرواژه',
+    login: 'ورود',
+    back: 'بازگشت به صفحه',
+    badPassword: 'گذرواژه درست نیست.',
+    tabs: { home: 'خانه', menu: 'مینو', place: 'رستورانت', bookings: 'رزروها' },
+    viewSite: 'دیدن صفحه',
+    logout: 'خروج',
+    working: 'در جریان است…',
+    saved: 'ذخیره شد.',
+    loadError: 'معلومات نیامد. سرور را ببینید.',
+    bookingsError: 'رزروها نیامد.',
+    saveError: 'ذخیره نشد. خانه‌های پر را ببینید.',
+    homeTitle: 'صفحه خانه',
+    welcome: 'خوش آمدید',
+    title: 'عنوان',
+    kicker: 'نام کوتاه',
+    heading: 'سرخط',
+    body: 'متن',
+    leftImage: 'عکس چپ',
+    rightImage: 'عکس راست',
+    save: 'ذخیره کنید',
+    tonight: 'امشب',
+    eyebrow: 'عنوان کوچک',
+    menuTitle: 'مینو',
+    group: 'دسته',
+    name: 'نام',
+    short: 'کوتاه',
+    saveGroup: 'دسته را ذخیره کنید',
+    dishName: 'نام غذا',
+    description: 'توضیح',
+    price: 'قیمت',
+    spice: 'تندی',
+    spices: ['ملایم', 'کمی تند', 'تند', 'خیلی تند'],
+    featured: 'در صفحه خانه دیده شود',
+    earlier: 'پیش',
+    later: 'پس',
+    remove: 'بردارید',
+    addImage: 'عکس اضافه کنید',
+    saveDish: 'غذا را ذخیره کنید',
+    placeTitle: 'رستورانت',
+    phone: 'تلفن',
+    tagline: 'شعار',
+    heroNote: 'یادداشت بالای صفحه',
+    story: 'داستان',
+    address: 'آدرس',
+    city: 'شهر',
+    days: 'روزها',
+    hours: 'ساعت',
+    bookingsTitle: 'رزروها',
+    noBookings: 'تا حال رزروی نشده است.',
+    guests: 'نفر',
+    table: 'میز {n}',
+    statuses: { pending: 'در انتظار', confirmed: 'تأیید', cancelled: 'لغو' },
+  },
+  en: {
+    dashboard: 'Dashboard',
+    password: 'Password',
+    login: 'Sign in',
+    back: 'Back to the site',
+    badPassword: 'The password is not right.',
+    tabs: { home: 'Home', menu: 'Menu', place: 'Restaurant', bookings: 'Reservations' },
+    viewSite: 'View the site',
+    logout: 'Sign out',
+    working: 'Working…',
+    saved: 'Saved.',
+    loadError: 'The details did not load. Check the server.',
+    bookingsError: 'Reservations did not load.',
+    saveError: 'It did not save. Check the filled fields.',
+    homeTitle: 'Home page',
+    welcome: 'Welcome',
+    title: 'Title',
+    kicker: 'Small label',
+    heading: 'Heading',
+    body: 'Text',
+    leftImage: 'Left photo',
+    rightImage: 'Right photo',
+    save: 'Save',
+    tonight: 'Tonight',
+    eyebrow: 'Small heading',
+    menuTitle: 'Menu',
+    group: 'Group',
+    name: 'Name',
+    short: 'Short line',
+    saveGroup: 'Save group',
+    dishName: 'Dish name',
+    description: 'Description',
+    price: 'Price',
+    spice: 'Heat',
+    spices: ['Mild', 'A little hot', 'Hot', 'Very hot'],
+    featured: 'Show on the home page',
+    earlier: 'Earlier',
+    later: 'Later',
+    remove: 'Remove',
+    addImage: 'Add a photo',
+    saveDish: 'Save dish',
+    placeTitle: 'Restaurant',
+    phone: 'Phone',
+    tagline: 'Tagline',
+    heroNote: 'Top-of-page note',
+    story: 'Story',
+    address: 'Address',
+    city: 'City',
+    days: 'Days',
+    hours: 'Hours',
+    bookingsTitle: 'Reservations',
+    noBookings: 'No table has been reserved yet.',
+    guests: 'guests',
+    table: 'Table {n}',
+    statuses: { pending: 'Pending', confirmed: 'Confirmed', cancelled: 'Cancelled' },
+  },
+}
+
+function readAdminLang() {
+  try {
+    const saved = localStorage.getItem(LANG_KEY)
+    if (UI[saved]) return saved
+  } catch {
+    /* storage can be blocked */
+  }
+  return 'ps'
+}
 
 function mergeLang(stored, fallback) {
   const out = {}
@@ -57,7 +233,7 @@ async function uploadImage(file) {
   return data.url
 }
 
-function ImageEditor({ images, onChange }) {
+function ImageEditor({ images, onChange, ui }) {
   async function add(event) {
     const file = event.target.files?.[0]
     event.target.value = ''
@@ -79,14 +255,14 @@ function ImageEditor({ images, onChange }) {
         <figure key={`${src}-${index}`}>
           <img src={src} alt="" />
           <span>
-            <button type="button" onClick={() => move(index, -1)}>مخکې</button>
-            <button type="button" onClick={() => move(index, 1)}>وروسته</button>
-            <button type="button" onClick={() => onChange(images.filter((_, item) => item !== index))}>لیرې</button>
+            <button type="button" onClick={() => move(index, -1)}>{ui.earlier}</button>
+            <button type="button" onClick={() => move(index, 1)}>{ui.later}</button>
+            <button type="button" onClick={() => onChange(images.filter((_, item) => item !== index))}>{ui.remove}</button>
           </span>
         </figure>
       ))}
       <label className="admin-upload">
-        انځور زیات کړئ
+        {ui.addImage}
         <input type="file" accept="image/*" hidden onChange={add} />
       </label>
     </div>
@@ -98,7 +274,7 @@ export default function Admin() {
   const [token, setToken] = useState(() => adminToken())
   const [password, setPassword] = useState('')
   const [tab, setTab] = useState('home')
-  const [editLang, setEditLang] = useState('ps')
+  const [editLang, setEditLang] = useState(readAdminLang)
   const [welcome, setWelcome] = useState(null)
   const [tonight, setTonight] = useState(null)
   const [profile, setProfile] = useState(null)
@@ -107,7 +283,17 @@ export default function Admin() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const dir = editLang === 'en' ? 'ltr' : 'rtl'
+  const ui = UI[editLang]
+  const dir = LANGS.find((lang) => lang.id === editLang)?.dir || 'rtl'
+
+  function chooseLang(next) {
+    setEditLang(next)
+    try {
+      localStorage.setItem(LANG_KEY, next)
+    } catch {
+      /* storage can be blocked */
+    }
+  }
 
   useEffect(() => {
     if (!token) return undefined
@@ -145,7 +331,7 @@ export default function Admin() {
     }).catch((reason) => {
       if (!live) return
       if (reason.status === 401) setToken('')
-      else setError('معلومات رانغلل. سرور وګورئ.')
+      else setError('load')
     }).finally(() => {
       if (live) setBusy(false)
     })
@@ -162,7 +348,7 @@ export default function Admin() {
         if (live) setReservations(data.reservations || [])
       })
       .catch(() => {
-        if (live) setError('ځای نیونې رانغلې.')
+        if (live) setError('bookings')
       })
     return () => {
       live = false
@@ -178,7 +364,7 @@ export default function Admin() {
       setToken(data.token)
       setPassword('')
     } catch (reason) {
-      setError(reason.message === 'request-failed' ? 'پټنوم سم نه دی.' : reason.message)
+      setError(reason.status === 422 || reason.message === 'request-failed' ? 'password' : 'load')
     }
   }
 
@@ -193,10 +379,10 @@ export default function Admin() {
     setMessage('')
     try {
       await action()
-      setMessage('خوندي شو.')
+      setMessage('saved')
     } catch (reason) {
       if (reason.status === 401) setToken('')
-      setError(reason.message === 'request-failed' ? 'خوندي نه شو. ډکې خانې وګورئ.' : reason.message)
+      setError('save')
     } finally {
       setBusy(false)
     }
@@ -210,56 +396,78 @@ export default function Admin() {
     )))
   }
 
+  const notices = { load: ui.loadError, bookings: ui.bookingsError, save: ui.saveError, password: ui.badPassword }
+  const eastern = '۰۱۲۳۴۵۶۷۸۹'
+  function localCount(amount) {
+    const text = String(amount)
+    return editLang === 'en' ? text : text.replace(/\d/g, (digit) => eastern[Number(digit)])
+  }
+  function tableName(label) {
+    const normalized = [...String(label || '')].map((char) => {
+      const index = eastern.indexOf(char)
+      return index >= 0 ? String(index) : char
+    }).join('')
+    const match = normalized.match(/\d+/)
+    return match ? ui.table.replace('{n}', localCount(match[0])) : label
+  }
+  const tabs = [
+    { id: 'home', label: ui.tabs.home },
+    { id: 'menu', label: ui.tabs.menu },
+    { id: 'place', label: ui.tabs.place },
+    { id: 'bookings', label: ui.tabs.bookings },
+  ]
+
   if (!token) {
     return (
-      <main className="admin-login" dir="rtl">
+      <main className="admin-login" dir={dir} lang={editLang}>
         <form className="admin-card" onSubmit={login}>
+          <LangSwitch value={editLang} onChange={chooseLang} />
           <p className="eyebrow dark">دسترخوان</p>
-          <h1>ډشبورډ</h1>
-          <Field label="پټنوم" type="password" value={password} onChange={setPassword} dir="ltr" />
-          {error && <p className="status error">{error}</p>}
-          <button className="btn btn-gold" type="submit">ننوتل</button>
-          <p><Link to="/">بېرته پاڼې ته</Link></p>
+          <h1>{ui.dashboard}</h1>
+          <Field label={ui.password} type="password" value={password} onChange={setPassword} dir="ltr" />
+          {notices[error] && <p className="status error">{notices[error]}</p>}
+          <button className="btn btn-gold" type="submit">{ui.login}</button>
+          <p><Link to="/">{ui.back}</Link></p>
         </form>
       </main>
     )
   }
 
   return (
-    <div className="admin" dir="rtl">
+    <div className="admin" dir={dir} lang={editLang}>
       <aside className="admin-side">
         <p className="brand-mark">دسترخوان</p>
+        <LangSwitch value={editLang} onChange={chooseLang} />
         <nav>
-          {TABS.map((item) => (
+          {tabs.map((item) => (
             <button key={item.id} type="button" className={tab === item.id ? 'is-on' : ''} onClick={() => setTab(item.id)}>
               {item.label}
             </button>
           ))}
         </nav>
-        <Link to="/">پاڼه وګورئ</Link>
-        <button type="button" onClick={logout}>وتل</button>
+        <Link to="/">{ui.viewSite}</Link>
+        <button type="button" onClick={logout}>{ui.logout}</button>
       </aside>
       <main className="admin-main">
-        {busy && <p className="status">روان دی…</p>}
-        {message && <p className="status">{message}</p>}
-        {error && <p className="status error">{error}</p>}
+        {busy && <p className="status">{ui.working}</p>}
+        {message === 'saved' && <p className="status">{ui.saved}</p>}
+        {notices[error] && <p className="status error">{notices[error]}</p>}
 
         {tab === 'home' && welcome && tonight && (
           <section>
-            <h1>د کور پاڼه</h1>
-            <LangSwitch value={editLang} onChange={setEditLang} />
+            <h1>{ui.homeTitle}</h1>
             <article className="admin-card">
-              <h2>ښه راغلاست</h2>
-              <Field label="سرلیک" dir={dir} value={welcome.text[editLang].meet} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], meet: value } } })} />
-              <Field label="لنډ نوم" dir={dir} value={welcome.text[editLang].kicker} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], kicker: value } } })} />
-              <Field label="سرخط" dir={dir} value={welcome.text[editLang].heading} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], heading: value } } })} />
-              <Field area label="متن" dir={dir} value={welcome.text[editLang].body} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], body: value } } })} />
+              <h2>{ui.welcome}</h2>
+              <Field label={ui.title} dir={dir} value={welcome.text[editLang].meet} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], meet: value } } })} />
+              <Field label={ui.kicker} dir={dir} value={welcome.text[editLang].kicker} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], kicker: value } } })} />
+              <Field label={ui.heading} dir={dir} value={welcome.text[editLang].heading} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], heading: value } } })} />
+              <Field area label={ui.body} dir={dir} value={welcome.text[editLang].body} onChange={(value) => setWelcome({ ...welcome, text: { ...welcome.text, [editLang]: { ...welcome.text[editLang], body: value } } })} />
               <div className="admin-images">
                 {['left', 'right'].map((side) => (
                   <figure key={side}>
                     <img src={welcome.images[side]} alt="" />
                     <label className="admin-upload">
-                      {side === 'left' ? 'کیڼ انځور' : 'ښي انځور'}
+                      {side === 'left' ? ui.leftImage : ui.rightImage}
                       <input type="file" accept="image/*" hidden onChange={async (event) => {
                         const file = event.target.files?.[0]
                         event.target.value = ''
@@ -271,49 +479,47 @@ export default function Admin() {
                   </figure>
                 ))}
               </div>
-              <button className="btn btn-gold" type="button" onClick={() => save(() => adminFetch('/api/admin/blocks/welcome', { method: 'PUT', body: welcome }))}>خوندي کړئ</button>
+              <button className="btn btn-gold" type="button" onClick={() => save(() => adminFetch('/api/admin/blocks/welcome', { method: 'PUT', body: welcome }))}>{ui.save}</button>
             </article>
             <article className="admin-card">
-              <h2>د نن شپه</h2>
-              <Field label="کوچنی سرلیک" dir={dir} value={tonight.text[editLang].eyebrow} onChange={(value) => setTonight({ text: { ...tonight.text, [editLang]: { ...tonight.text[editLang], eyebrow: value } } })} />
-              <Field label="سرلیک" dir={dir} value={tonight.text[editLang].title} onChange={(value) => setTonight({ text: { ...tonight.text, [editLang]: { ...tonight.text[editLang], title: value } } })} />
-              <button className="btn btn-gold" type="button" onClick={() => save(() => adminFetch('/api/admin/blocks/tonight', { method: 'PUT', body: tonight }))}>خوندي کړئ</button>
+              <h2>{ui.tonight}</h2>
+              <Field label={ui.eyebrow} dir={dir} value={tonight.text[editLang].eyebrow} onChange={(value) => setTonight({ text: { ...tonight.text, [editLang]: { ...tonight.text[editLang], eyebrow: value } } })} />
+              <Field label={ui.title} dir={dir} value={tonight.text[editLang].title} onChange={(value) => setTonight({ text: { ...tonight.text, [editLang]: { ...tonight.text[editLang], title: value } } })} />
+              <button className="btn btn-gold" type="button" onClick={() => save(() => adminFetch('/api/admin/blocks/tonight', { method: 'PUT', body: tonight }))}>{ui.save}</button>
             </article>
           </section>
         )}
 
         {tab === 'menu' && (
           <section>
-            <h1>مینو</h1>
-            <LangSwitch value={editLang} onChange={setEditLang} />
+            <h1>{ui.menuTitle}</h1>
             {categories.map((group) => (
               <article className="admin-card" key={group.id}>
-                <h2>ډله</h2>
-                <Field label="نوم" dir={dir} value={group.translations[editLang].name} onChange={(value) => setCategories((current) => current.map((row) => row.id === group.id ? { ...row, translations: { ...row.translations, [editLang]: { ...row.translations[editLang], name: value } } } : row))} />
-                <Field label="لنډه" dir={dir} value={group.translations[editLang].description} onChange={(value) => setCategories((current) => current.map((row) => row.id === group.id ? { ...row, translations: { ...row.translations, [editLang]: { ...row.translations[editLang], description: value } } } : row))} />
-                <button className="btn btn-dark" type="button" onClick={() => save(() => adminFetch(`/api/admin/categories/${group.id}`, { method: 'PUT', body: { translations: group.translations } }))}>ډله خوندي کړئ</button>
+                <h2>{ui.group}</h2>
+                <Field label={ui.name} dir={dir} value={group.translations[editLang].name} onChange={(value) => setCategories((current) => current.map((row) => row.id === group.id ? { ...row, translations: { ...row.translations, [editLang]: { ...row.translations[editLang], name: value } } } : row))} />
+                <Field label={ui.short} dir={dir} value={group.translations[editLang].description} onChange={(value) => setCategories((current) => current.map((row) => row.id === group.id ? { ...row, translations: { ...row.translations, [editLang]: { ...row.translations[editLang], description: value } } } : row))} />
+                <button className="btn btn-dark" type="button" onClick={() => save(() => adminFetch(`/api/admin/categories/${group.id}`, { method: 'PUT', body: { translations: group.translations } }))}>{ui.saveGroup}</button>
                 {group.items.map((item) => (
                   <div className="admin-item" key={item.id}>
-                    <Field label="د خوړو نوم" dir={dir} value={item.translations[editLang].name} onChange={(value) => patchItem(group.id, item.id, { translations: { ...item.translations, [editLang]: { ...item.translations[editLang], name: value } } })} />
-                    <Field area label="تشریح" dir={dir} value={item.translations[editLang].description} onChange={(value) => patchItem(group.id, item.id, { translations: { ...item.translations, [editLang]: { ...item.translations[editLang], description: value } } })} />
+                    <Field label={ui.dishName} dir={dir} value={item.translations[editLang].name} onChange={(value) => patchItem(group.id, item.id, { translations: { ...item.translations, [editLang]: { ...item.translations[editLang], name: value } } })} />
+                    <Field area label={ui.description} dir={dir} value={item.translations[editLang].description} onChange={(value) => patchItem(group.id, item.id, { translations: { ...item.translations, [editLang]: { ...item.translations[editLang], description: value } } })} />
                     <label>
-                      بیه
+                      {ui.price}
                       <input dir="ltr" type="number" min="0" value={item.price} onChange={(event) => patchItem(group.id, item.id, { price: Number(event.target.value) })} />
                     </label>
                     <label>
-                      توندوالی
+                      {ui.spice}
                       <select value={item.spice} onChange={(event) => patchItem(group.id, item.id, { spice: Number(event.target.value) })}>
-                        <option value={0}>ملایم</option>
-                        <option value={1}>لږ توند</option>
-                        <option value={2}>توند</option>
-                        <option value={3}>ډېر توند</option>
+                        {ui.spices.map((label, level) => (
+                          <option key={label} value={level}>{label}</option>
+                        ))}
                       </select>
                     </label>
                     <label className="admin-check">
                       <input type="checkbox" checked={Boolean(item.featured)} onChange={(event) => patchItem(group.id, item.id, { featured: event.target.checked })} />
-                      په کور پاڼه کې ښکاره شي
+                      {ui.featured}
                     </label>
-                    <ImageEditor images={item.images} onChange={(images) => patchItem(group.id, item.id, { images })} />
+                    <ImageEditor images={item.images} ui={ui} onChange={(images) => patchItem(group.id, item.id, { images })} />
                     <button className="btn btn-gold" type="button" onClick={() => save(() => adminFetch(`/api/admin/items/${item.id}`, {
                       method: 'PUT',
                       body: {
@@ -323,7 +529,7 @@ export default function Admin() {
                         images: item.images,
                         translations: item.translations,
                       },
-                    }))}>خوړه خوندي کړئ</button>
+                    }))}>{ui.saveDish}</button>
                   </div>
                 ))}
               </article>
@@ -333,36 +539,35 @@ export default function Admin() {
 
         {tab === 'place' && profile && (
           <section>
-            <h1>رستورانت</h1>
-            <LangSwitch value={editLang} onChange={setEditLang} />
+            <h1>{ui.placeTitle}</h1>
             <article className="admin-card">
-              <Field label="ټیلیفون" dir="ltr" value={profile.phone} onChange={(value) => setProfile({ ...profile, phone: value })} />
-              <Field label="نوم" dir={dir} value={profile.translations[editLang].brand} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], brand: value } } })} />
-              <Field label="شعار" dir={dir} value={profile.translations[editLang].tagline} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], tagline: value } } })} />
-              <Field area label="د سر پاڼې یادښت" dir={dir} value={profile.translations[editLang].heroNote} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], heroNote: value } } })} />
-              <Field area label="کیسه" dir={dir} value={profile.translations[editLang].about} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], about: value } } })} />
-              <Field label="پته" dir={dir} value={profile.translations[editLang].address} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], address: value } } })} />
-              <Field label="ښار" dir={dir} value={profile.translations[editLang].city} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], city: value } } })} />
+              <Field label={ui.phone} dir="ltr" value={profile.phone} onChange={(value) => setProfile({ ...profile, phone: value })} />
+              <Field label={ui.name} dir={dir} value={profile.translations[editLang].brand} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], brand: value } } })} />
+              <Field label={ui.tagline} dir={dir} value={profile.translations[editLang].tagline} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], tagline: value } } })} />
+              <Field area label={ui.heroNote} dir={dir} value={profile.translations[editLang].heroNote} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], heroNote: value } } })} />
+              <Field area label={ui.story} dir={dir} value={profile.translations[editLang].about} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], about: value } } })} />
+              <Field label={ui.address} dir={dir} value={profile.translations[editLang].address} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], address: value } } })} />
+              <Field label={ui.city} dir={dir} value={profile.translations[editLang].city} onChange={(value) => setProfile({ ...profile, translations: { ...profile.translations, [editLang]: { ...profile.translations[editLang], city: value } } })} />
               {profile.hours.map((row, index) => (
                 <div className="admin-hours" key={index}>
-                  <Field label="ورځې" dir={dir} value={row.days[editLang]} onChange={(value) => setProfile({ ...profile, hours: profile.hours.map((hour, hourIndex) => hourIndex === index ? { ...hour, days: { ...hour.days, [editLang]: value } } : hour) })} />
-                  <Field label="ساعت" dir="ltr" value={row.time} onChange={(value) => setProfile({ ...profile, hours: profile.hours.map((hour, hourIndex) => hourIndex === index ? { ...hour, time: value } : hour) })} />
+                  <Field label={ui.days} dir={dir} value={row.days[editLang]} onChange={(value) => setProfile({ ...profile, hours: profile.hours.map((hour, hourIndex) => hourIndex === index ? { ...hour, days: { ...hour.days, [editLang]: value } } : hour) })} />
+                  <Field label={ui.hours} dir="ltr" value={row.time} onChange={(value) => setProfile({ ...profile, hours: profile.hours.map((hour, hourIndex) => hourIndex === index ? { ...hour, time: value } : hour) })} />
                 </div>
               ))}
-              <button className="btn btn-gold" type="button" onClick={() => save(() => adminFetch('/api/admin/profile', { method: 'PUT', body: profile }))}>خوندي کړئ</button>
+              <button className="btn btn-gold" type="button" onClick={() => save(() => adminFetch('/api/admin/profile', { method: 'PUT', body: profile }))}>{ui.save}</button>
             </article>
           </section>
         )}
 
         {tab === 'bookings' && (
           <section>
-            <h1>ځای نیونې</h1>
-            {!reservations.length && <p>تر اوسه ځای نه دی نیول شوی.</p>}
+            <h1>{ui.bookingsTitle}</h1>
+            {!reservations.length && <p>{ui.noBookings}</p>}
             {reservations.map((row) => (
               <article className="admin-card" key={row.id}>
                 <h2>{row.guest_name}</h2>
-                <p><bdi dir="ltr">{row.phone}</bdi> · {row.guests} کسان · {row.table}</p>
-                <p><bdi dir="ltr">{row.reserved_at}</bdi> · {row.status}</p>
+                <p><bdi dir="ltr">{row.phone}</bdi> · {localCount(row.guests)} {ui.guests} · {tableName(row.table)}</p>
+                <p><bdi dir="ltr">{row.reserved_at}</bdi> · {ui.statuses[row.status] || row.status}</p>
                 {row.notes && <p>{row.notes}</p>}
               </article>
             ))}

@@ -1,9 +1,8 @@
-import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
+import DishSlides from '../components/DishSlides'
 import { usePlace } from '../content'
 import { useI18n } from '../i18n'
-
-const DishView = lazy(() => import('../three/DishView'))
+import { HERO_SLIDES } from '../slides'
 
 export default function About() {
   const { t } = useI18n()
@@ -20,9 +19,7 @@ export default function About() {
 
       <section className="about-grid">
         <div className="about-scene">
-          <Suspense fallback={<div className="scene-fallback" />}>
-            <DishView kind="platter" />
-          </Suspense>
+          <DishSlides images={HERO_SLIDES} alt={place.brand} />
         </div>
         <div>
           {paragraphs.map((paragraph) => (

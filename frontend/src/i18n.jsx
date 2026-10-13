@@ -40,7 +40,7 @@ const ui = {
   'home.eyebrow': L('افغاني رستورانت · {city}', 'رستورانت افغانی · {city}', 'Afghan restaurant · {city}'),
   'home.menu': L('مینو وګورئ', 'مینو را ببینید', 'See the menu'),
   'home.reserve': L('میز ونیسئ', 'میز بگیرید', 'Reserve a table'),
-  'home.drag': L('د صحنې د څرخولو لپاره یې وښکئ', 'برای چرخاندن صحنه آن را بکشید', 'Drag to turn the table'),
+  'home.drag': L('عکسونه پخپله بدلیږي', 'عکس‌ها خودبه‌خود عوض می‌شوند', 'The photos change on their own'),
   'home.meet': L(
     'چیرته چې خوند، دود او مېلمه پالنه سره یو ځای کېږي',
     'جایی که مزه، سنت و مهمان‌نوازی به هم می‌رسند',
