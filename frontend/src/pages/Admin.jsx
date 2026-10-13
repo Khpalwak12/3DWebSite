@@ -24,6 +24,7 @@ const UI = {
     logout: 'وتل',
     working: 'روان دی…',
     saved: 'خوندي شو.',
+    notSaved: 'خوندي نه شو.',
     loadError: 'معلومات رانغلل. سرور وګورئ.',
     bookingsError: 'ځای نیونې رانغلې.',
     saveError: 'خوندي نه شو. ډکې خانې وګورئ.',
@@ -80,6 +81,7 @@ const UI = {
     logout: 'خروج',
     working: 'در جریان است…',
     saved: 'ذخیره شد.',
+    notSaved: 'ذخیره نشد.',
     loadError: 'معلومات نیامد. سرور را ببینید.',
     bookingsError: 'رزروها نیامد.',
     saveError: 'ذخیره نشد. خانه‌های پر را ببینید.',
@@ -136,6 +138,7 @@ const UI = {
     logout: 'Sign out',
     working: 'Working…',
     saved: 'Saved.',
+    notSaved: 'Not saved.',
     loadError: 'The details did not load. Check the server.',
     bookingsError: 'Reservations did not load.',
     saveError: 'It did not save. Check the filled fields.',
@@ -382,11 +385,18 @@ export default function Admin() {
       setMessage('saved')
     } catch (reason) {
       if (reason.status === 401) setToken('')
+      setMessage('failed')
       setError('save')
     } finally {
       setBusy(false)
     }
   }
+
+  useEffect(() => {
+    if (message !== 'saved' && message !== 'failed') return undefined
+    const timer = window.setTimeout(() => setMessage(''), 4500)
+    return () => window.clearTimeout(timer)
+  }, [message])
 
   function patchItem(groupId, itemId, patch) {
     setCategories((current) => current.map((group) => (
@@ -450,8 +460,12 @@ export default function Admin() {
       </aside>
       <main className="admin-main">
         {busy && <p className="status">{ui.working}</p>}
-        {message === 'saved' && <p className="status">{ui.saved}</p>}
-        {notices[error] && <p className="status error">{notices[error]}</p>}
+        {error && error !== 'save' && notices[error] && <p className="status error">{notices[error]}</p>}
+        {(message === 'saved' || message === 'failed') && (
+          <p className={`admin-toast${message === 'failed' ? ' is-error' : ''}`} role="status" onClick={() => setMessage('')}>
+            {message === 'saved' ? ui.saved : ui.notSaved}
+          </p>
+        )}
 
         {tab === 'home' && welcome && tonight && (
           <section>

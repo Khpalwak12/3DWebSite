@@ -1150,3 +1150,19 @@ html[dir='rtl'] .slide-progress::after { transform-origin: right center; }
 }
 .admin-hours { display: grid; grid-template-columns: 1.4fr 1fr; gap: 0.6rem; }
 .admin .btn { margin-top: 0.6rem; }
+.admin-toast {
+  position: fixed;
+  z-index: 80;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  background: var(--gold-2);
+  color: var(--dark);
+  font-weight: 700;
+  box-shadow: 0 16px 40px rgba(20, 14, 11, 0.4);
+  cursor: pointer;
+}
+.admin-toast.is-error { background: #f6d4d1; color: #6d1f1c; }
